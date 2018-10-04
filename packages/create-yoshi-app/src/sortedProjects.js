@@ -6,4 +6,4 @@ module.exports = [
   'node-library',
   'component-library',
   'server',
-]
+];
