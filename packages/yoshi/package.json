@@ -14,6 +14,7 @@
     "test:watch": "mocha './test/{,!(fixtures)/**/}/*.spec.js' --watch"
   },
   "dependencies": {
+    "@sentry/node": "^4.0.6",
     "@wix/depkeeper-preset-yoshi": "^1.0.0",
     "ajv": "^6.5.3",
     "ajv-keywords": "^3.2.0",
@@ -49,6 +50,7 @@
     "externalize-relative-module-loader": "~1.0.0",
     "file-loader": "~1.1.8",
     "fork-ts-checker-webpack-plugin": "^0.4.10",
+    "find-pkg": "^2.0.0",
     "glob": "~7.1.2",
     "globby": "^8.0.1",
     "graphql": "^0.10.5",
@@ -81,6 +83,7 @@
     "mocha-teamcity-reporter": "~1.1.1",
     "mock-require": "^2.0.0",
     "nyc": "^12.0.1",
+    "os-name": "^2.0.1",
     "petri-specs": "~1.2.0",
     "prettier": "^1.12.1",
     "raw-loader": "~0.5.1",

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Sentry = require('@sentry/node');
 
 const presetPath = require.resolve('../src/index.js');
 
@@ -8,6 +9,10 @@ require('yoshi-config');
 module.exports = async command => {
   const appDirectory = fs.realpathSync(process.cwd());
   const action = require(`./commands/${command}`);
+
+  Sentry.configureScope(scope => {
+    scope.setTag('command', command);
+  });
 
   try {
     const { persistent = false } = await action({
@@ -20,9 +25,7 @@ module.exports = async command => {
     }
   } catch (error) {
     if (error.name !== 'WorkerError') {
-      console.error(error);
+      throw error;
     }
-
-    process.exit(1);
   }
 };
