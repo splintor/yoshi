@@ -14,18 +14,12 @@ module.exports = async command => {
     scope.setTag('command', command);
   });
 
-  try {
-    const { persistent = false } = await action({
-      context: presetPath,
-      workerOptions: { cwd: appDirectory },
-    });
+  const { persistent = false } = await action({
+    context: presetPath,
+    workerOptions: { cwd: appDirectory },
+  });
 
-    if (!persistent) {
-      process.exit(0);
-    }
-  } catch (error) {
-    if (error.name !== 'WorkerError') {
-      throw error;
-    }
+  if (!persistent) {
+    process.exit(0);
   }
 };
