@@ -35,31 +35,35 @@ module.exports = () => {
   });
 
   process.removeAllListeners('unhandledRejection');
+  process.removeAllListeners('uncaughtException');
 
-  process.on('unhandledRejection', err => {
-    Sentry.withScope(async scope => {
-      scope.addEventProcessor(event => {
-        event.level = Sentry.Severity.Fatal;
-        return event;
-      });
-
-      const info = await getEnvInfo();
-      scope.setExtra('envinfo', info);
-
-      const pkg = require(path.resolve(process.cwd(), 'package.json'));
-      let yoshiConfig = 'Zero config';
-
-      if (pkg.yoshi) {
-        yoshiConfig = JSON.stringify(pkg.yoshi, null, 2);
-      }
-
-      scope.setExtra('yoshiConfig', yoshiConfig);
-
-      await Sentry.getCurrentHub()
-        .getClient()
-        .captureException(err, undefined, scope);
-
-      process.exit(1);
-    });
-  });
+  process.on('uncaughtException', handleError);
+  process.on('unhandledRejection', handleError);
 };
+
+function handleError(err) {
+  Sentry.withScope(async scope => {
+    scope.addEventProcessor(event => {
+      event.level = Sentry.Severity.Fatal;
+      return event;
+    });
+
+    const info = await getEnvInfo();
+    scope.setExtra('envInfo', info);
+
+    const pkg = require(path.resolve(process.cwd(), 'package.json'));
+    let yoshiConfig = 'Zero config';
+
+    if (pkg.yoshi) {
+      yoshiConfig = JSON.stringify(pkg.yoshi, null, 2);
+    }
+
+    scope.setExtra('yoshiConfig', yoshiConfig);
+
+    await Sentry.getCurrentHub()
+      .getClient()
+      .captureException(err, undefined, scope);
+
+    process.exit(1);
+  });
+}
