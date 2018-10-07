@@ -11,16 +11,7 @@ module.exports = () => {
     release: `${name}@${version}`,
     beforeSend(event) {
       if (event.level === Sentry.Severity.Fatal) {
-        console.log(
-          chalk.red(
-            '🤮  Oh, Yoshi just crashed. Care to help us with some feedback?',
-          ),
-        );
-        console.log(
-          `Go to ${chalk.green(
-            `http://localhost:8080/?eventId=${event.event_id}`,
-          )} to submit your feedback.`,
-        );
+        printCrashInfo(event.event_id);
       }
 
       return event;
@@ -31,7 +22,7 @@ module.exports = () => {
 
   Sentry.configureScope(async scope => {
     scope.setTag('node-version', process.version);
-    scope.setTag('operating-system', osName());
+    scope.setTag('os', osName());
   });
 
   process.removeAllListeners('unhandledRejection');
@@ -66,4 +57,41 @@ function handleError(err) {
 
     process.exit(1);
   });
+}
+
+function outputURL(url) {
+  return chalk.cyan(url);
+}
+
+function printCrashInfo(eventId) {
+  console.log();
+  console.log(
+    chalk.redBright(
+      `🤮  Oh no, Yoshi just crashed! ${chalk.yellow(`Event ID = ${eventId}`)}`,
+    ),
+  );
+  console.log();
+  console.log('  Here are a few options on what you can do now:');
+  console.log();
+  console.log(
+    `    * Help us figure out what caused the crash by submitting feedback on the error. You can do that by going to:`,
+  );
+  console.log(
+    `      ${outputURL(
+      `https://wix.github.io/yoshi/error-feedback/?eventId=${eventId}`,
+    )}`,
+  );
+  console.log();
+  console.log(`    * Find us on slack on the #yoshi channel:`);
+  console.log(`      ${outputURL('https://wix.slack.com/messages/yoshi/')}`);
+  console.log();
+  console.log(
+    '    * Open a bug report on our github repository (be sure to include your event id):',
+  );
+  console.log(
+    `      ${outputURL(
+      `https://github.com/wix/yoshi/issues/new?template=BUG_REPORT.md&labels=%F0%9F%90%9B%20Bug`,
+    )}`,
+  );
+  console.log();
 }
