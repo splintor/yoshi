@@ -1,10 +1,9 @@
 const prog = require('commander');
 const runCLI = require('../src/cli');
-const { name, version } = require('../package');
+const { version } = require('../package');
 const infoCommand = require('../src/commands/info');
 const config = require('yoshi-config');
 const configureSentry = require('../src/sentry');
-const findPkg = require('find-pkg');
 
 // IDEs start debugging with '--inspect' or '--inspect-brk' option. We are setting --debug instead
 require('./normalize-debugging-args')();
@@ -108,7 +107,7 @@ process.on('unhandledRejection', error => {
 });
 
 try {
-  if (require(findPkg.sync(process.cwd())).name !== name) {
+  if (!process.env.DISABLE_SENTRY) {
     configureSentry();
   }
 } catch (err) {} // ignore errors of configuring sentry
