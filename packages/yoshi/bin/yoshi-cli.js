@@ -110,6 +110,6 @@ try {
   if (!process.env.DISABLE_SENTRY) {
     configureSentry();
   }
-} catch (err) {} // ignore errors of configuring sentry
+} catch (_) {} // ignore errors of configuring sentry
 
 prog.parse(process.argv);

@@ -4,6 +4,7 @@ const Sentry = require('@sentry/node');
 const chalk = require('chalk');
 const { getEnvInfo, loadEnvInfo } = require('../src/env-info');
 const path = require('path');
+const findPkg = require('find-pkg');
 
 module.exports = () => {
   Sentry.init({
@@ -38,6 +39,11 @@ function handleError(err) {
       event.level = Sentry.Severity.Fatal;
       return event;
     });
+
+    try {
+      const packageJson = require(findPkg.sync(process.cwd()));
+      scope.setTag('package', packageJson.name);
+    } catch (_) {}
 
     const info = await getEnvInfo();
     scope.setExtra('envInfo', info);
