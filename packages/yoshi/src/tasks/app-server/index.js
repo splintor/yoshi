@@ -95,9 +95,12 @@ function initializeServerStartDelegate({
 
     clearTimeout(waitingLogTimeout);
 
+    const localUrlForBrowser = `http://localhost:${env.PORT}${env.MOUNT_POINT ||
+      '/'}`;
+
     console.log(
       'Application is now available at ',
-      chalk.magenta(`http://localhost:${env.PORT}${env.MOUNT_POINT || '/'}`),
+      chalk.magenta(localUrlForBrowser),
     );
     if (debugBrkPort !== undefined) {
       console.log(
@@ -114,6 +117,8 @@ function initializeServerStartDelegate({
       'Server log is written to ',
       chalk.magenta('./target/server.log'),
     );
+
+    return localUrlForBrowser;
   };
 }
 
