@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const { getEnvInfo, loadEnvInfo } = require('../src/env-info');
 const path = require('path');
 const findPkg = require('find-pkg');
+const { inTeamCity } = require('yoshi-helpers/queries');
 
 module.exports = () => {
   Sentry.init({
@@ -24,6 +25,8 @@ module.exports = () => {
   Sentry.configureScope(async scope => {
     scope.setTag('node-version', process.version);
     scope.setTag('os', osName());
+    scope.setTag('NODE_ENV', process.env.NODE_ENV);
+    scope.setTag('CI', !!inTeamCity());
   });
 
   process.removeAllListeners('unhandledRejection');
