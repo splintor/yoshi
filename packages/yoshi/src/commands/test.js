@@ -21,6 +21,10 @@ const {
   hasBundleInStaticsDir,
 } = require('yoshi-helpers');
 const protractor = require('../../src/tasks/protractor');
+const {
+  wrapErrorsWithUserLandError,
+  UserLandError,
+} = require('../UserLandError');
 
 const runner = createRunner({
   logger: new LoggerPlugin(),
@@ -123,9 +127,11 @@ module.exports = runner.command(
 
         await runMocha(); // fail silently
       } else {
-        await runMocha(error => {
-          throw `mocha failed with status code "${error.code}"`;
-        });
+        await wrapErrorsWithUserLandError(() =>
+          runMocha(error => {
+            throw `mocha failed with status code "${error.code}"`;
+          }),
+        );
       }
     }
 
@@ -149,7 +155,9 @@ module.exports = runner.command(
         await execa('node', jasmineArgs, { stdio: 'inherit' });
       } catch (error) {
         if (!shouldWatch) {
-          throw `jasmine failed with status code "${error.code}"`;
+          throw new UserLandError(
+            `jasmine failed with status code "${error.code}"`,
+          );
         }
       }
 
@@ -204,20 +212,22 @@ module.exports = runner.command(
       try {
         await execa('node', jestCliOptions, { stdio: 'inherit' });
       } catch (error) {
-        throw `jest failed with status code "${error.code}"`;
+        throw new UserLandError(`jest failed with status code "${error.code}"`);
       }
     }
 
     if (cliArgs.karma) {
-      await webpack({
-        configPath: require.resolve('../../config/webpack.config.specs'),
-        watch: shouldWatch,
-      });
+      await wrapErrorsWithUserLandError(async () => {
+        await webpack({
+          configPath: require.resolve('../../config/webpack.config.specs'),
+          watch: shouldWatch,
+        });
 
-      await karma({
-        configFile: path.join(__dirname, '../../config/karma.conf'),
-        singleRun: !shouldWatch,
-        autoWatch: shouldWatch,
+        await karma({
+          configFile: path.join(__dirname, '../../config/karma.conf'),
+          singleRun: !shouldWatch,
+          autoWatch: shouldWatch,
+        });
       });
     }
 

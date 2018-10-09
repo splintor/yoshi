@@ -6,6 +6,7 @@ const { getEnvInfo, loadEnvInfo } = require('../src/env-info');
 const path = require('path');
 const findPkg = require('find-pkg');
 const { inTeamCity } = require('yoshi-helpers/queries');
+const { UserLandError } = require('./UserLandError');
 
 module.exports = () => {
   Sentry.init({
@@ -37,6 +38,14 @@ module.exports = () => {
 };
 
 function handleError(err) {
+  if (err instanceof UserLandError) {
+    if (err.original.name !== 'WorkerError') {
+      console.error(err.original);
+    }
+
+    process.exit(1);
+  }
+
   Sentry.withScope(async scope => {
     scope.addEventProcessor(event => {
       event.level = Sentry.Severity.Fatal;

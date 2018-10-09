@@ -4,6 +4,7 @@ const { version } = require('../package');
 const infoCommand = require('../src/commands/info');
 const config = require('yoshi-config');
 const configureSentry = require('../src/sentry');
+const { UserLandError } = require('../src/UserLandError');
 
 // IDEs start debugging with '--inspect' or '--inspect-brk' option. We are setting --debug instead
 require('./normalize-debugging-args')();
@@ -103,7 +104,13 @@ prog
   .action(infoCommand);
 
 process.on('unhandledRejection', error => {
-  throw error;
+  const errorToPrint = error instanceof UserLandError ? error.original : error;
+
+  if (errorToPrint.name !== 'WorkerError') {
+    console.error(errorToPrint);
+  }
+
+  process.exit(1);
 });
 
 try {
