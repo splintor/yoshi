@@ -110,13 +110,7 @@ module.exports = async () => {
   });
 
   // Wait for both compilations to finish
-  try {
-    await compilationPromise;
-  } catch (error) {
-    // We already log compilation errors in a compiler hook
-    // If there's an error, just exit(1)
-    process.exit(1);
-  }
+  await compilationPromise;
 
   // Start up the user's server
   const inspectArg = process.argv.find(arg => arg.includes('--debug'));

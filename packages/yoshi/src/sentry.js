@@ -40,7 +40,7 @@ module.exports = () => {
 function handleError(err) {
   if (err instanceof UserLandError) {
     if (err.original.name !== 'WorkerError') {
-      console.error(err.original);
+      console.error(err.original.message || err.original);
     }
 
     process.exit(1);

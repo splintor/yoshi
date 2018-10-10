@@ -107,7 +107,7 @@ process.on('unhandledRejection', error => {
   const errorToPrint = error instanceof UserLandError ? error.original : error;
 
   if (errorToPrint.name !== 'WorkerError') {
-    console.error(errorToPrint);
+    console.error(errorToPrint.message || errorToPrint);
   }
 
   process.exit(1);

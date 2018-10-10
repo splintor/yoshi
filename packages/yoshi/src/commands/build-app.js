@@ -28,6 +28,7 @@ const {
 
 const updateNodeVersion = require('../tasks/update-node-version');
 const wixDepCheck = require('../tasks/dep-check');
+const { UserLandError } = require('../UserLandError');
 
 const inTeamCity = checkInTeamCity();
 
@@ -130,9 +131,8 @@ module.exports = async () => {
     },
     error => {
       console.log(chalk.red('Failed to compile.\n'));
-      console.log(error.message || error);
 
-      process.exit(1);
+      throw new UserLandError(error);
     },
   );
 };
