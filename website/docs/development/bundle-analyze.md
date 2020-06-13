@@ -32,5 +32,5 @@ yoshi build --analyze
 - Go to https://webpack.github.io/analyse/
 - Upload `target/webpack-stats.json` from your project
 
-### Bundle Stats Board
+#### Bundle Stats Board
 You can also use https://bo.wix.com/bundle-stats-board to view analysis of your artifacts that were build on CI (and also history build, so you can see if a change was done).
